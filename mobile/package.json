@@ -2,11 +2,13 @@
   "name": "mobile",
   "version": "1.0.0",
   "private": true,
+  "description": "Faatere Mobile App - React Native Expo (V1.1)",
   "scripts": {
-    "dev": "echo 'Mobile not yet configured'",
-    "build": "echo 'Mobile not yet configured'",
-    "lint": "echo 'Mobile not yet configured'",
-    "test": "echo 'Mobile not yet configured'",
-    "compile": "echo 'Mobile not yet configured'"
+    "placeholder": "echo 'Mobile app will be implemented in V1.1'",
+    "dev": "echo 'Mobile dev - V1.1'",
+    "build": "echo 'Mobile build - V1.1'",
+    "lint": "echo 'Mobile lint - V1.1'",
+    "test": "echo 'Mobile test - V1.1'",
+    "compile": "echo 'Mobile compile - V1.1'"
   }
 }

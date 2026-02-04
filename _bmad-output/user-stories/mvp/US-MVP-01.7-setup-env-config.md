@@ -20,11 +20,11 @@
 
 ## Critères d'acceptance
 
-- [ ] `.env.example` à la racine avec toutes les variables globales
-- [ ] `.env.example` dans chaque workspace avec variables spécifiques
-- [ ] `.gitignore` configuré pour exclure tous les `.env` sauf `.env.example`
-- [ ] Documentation des variables dans chaque `.env.example`
-- [ ] Validation des variables requises au démarrage (ConfigModule NestJS)
+- [x] `.env.example` à la racine avec toutes les variables globales
+- [x] `.env.example` dans chaque workspace avec variables spécifiques
+- [x] `.gitignore` configuré pour exclure tous les `.env` sauf `.env.example`
+- [x] Documentation des variables dans chaque `.env.example`
+- [x] Validation des variables requises au démarrage (ConfigModule NestJS)
 
 ---
 
@@ -148,7 +148,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 NEXT_PUBLIC_APP_NAME=Faatere
 ```
 
-- [ ] Configurer validation des variables dans NestJS avec `@nestjs/config` et `Joi`
+- [x] Configurer validation des variables dans NestJS avec `@nestjs/config` et `Joi`
 
 ---
 

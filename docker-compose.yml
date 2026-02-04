@@ -1,47 +1,156 @@
 services:
+  # ========================================
+  # Databases
+  # ========================================
   postgres:
     image: postgres:16-alpine
     container_name: faatere-postgres
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-faatere}
-      POSTGRES_USER: ${POSTGRES_USER:-faatere}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-faatere_dev_password}
+    restart: unless-stopped
     ports:
-      - '5432:5432'
+      - '${DATABASE_PORT:-5432}:5432'
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-faatere}
+      POSTGRES_USER: ${DATABASE_USER:-faatere}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-faatere_dev_password}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-faatere}']
+      test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USER:-faatere} -d ${DATABASE_NAME:-faatere}']
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - faatere-network
 
-  adminer:
-    image: adminer:latest
-    container_name: faatere-adminer
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: faatere-postgres-test
+    restart: unless-stopped
     ports:
-      - '8080:8080'
-    depends_on:
-      postgres:
-        condition: service_healthy
+      - '5433:5432'
+    environment:
+      POSTGRES_DB: faatere_test
+      POSTGRES_USER: ${DATABASE_USER:-faatere}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-faatere_dev_password}
+    networks:
+      - faatere-network
 
+  # ========================================
+  # Storage
+  # ========================================
   minio:
     image: minio/minio:latest
     container_name: faatere-minio
+    restart: unless-stopped
     command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     ports:
       - '9000:9000'
       - '9001:9001'
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-minioadmin}
     volumes:
       - minio_data:/data
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      test: ['CMD', 'mc', 'ready', 'local']
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - faatere-network
+
+  # ========================================
+  # Tools
+  # ========================================
+  adminer:
+    image: adminer:latest
+    container_name: faatere-adminer
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      - postgres
+    networks:
+      - faatere-network
+
+  # ========================================
+  # Backend
+  # ========================================
+  backend:
+    build:
+      context: .
+      dockerfile: ./services/backend/Dockerfile
+      target: development
+    container_name: faatere-backend
+    restart: unless-stopped
+    ports:
+      - '${BACKEND_PORT:-3001}:${BACKEND_PORT:-3001}'
+    volumes:
+      - ./services/backend/src:/app/src
+      - ./services/backend/test:/app/test
+      - ./shared:/app/shared
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=${BACKEND_PORT:-3001}
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=${DATABASE_NAME:-faatere}
+      - DATABASE_USER=${DATABASE_USER:-faatere}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-faatere_dev_password}
+      - DATABASE_URL=postgresql://${DATABASE_USER:-faatere}:${DATABASE_PASSWORD:-faatere_dev_password}@postgres:5432/${DATABASE_NAME:-faatere}
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret_min_32_chars_here}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-24h}
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-minioadmin}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-minioadmin}
+      - S3_BUCKET=${S3_BUCKET:-faatere-uploads}
+      - FRONTEND_URL=http://localhost:${FRONTEND_PORT:-3000}
+      - CORS_ORIGIN=http://localhost:${FRONTEND_PORT:-3000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - faatere-network
+
+  # ========================================
+  # Frontend
+  # ========================================
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+      target: development
+    container_name: faatere-frontend
+    restart: unless-stopped
+    ports:
+      - '${FRONTEND_PORT:-3000}:3000'
+    volumes:
+      - ./frontend/src:/app/frontend/src
+      - ./frontend/public:/app/frontend/public
+      - ./shared:/app/shared
+      - /app/node_modules
+      - /app/frontend/node_modules
+      - /app/frontend/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:${BACKEND_PORT:-3001}
+      - NEXT_PUBLIC_APP_NAME=Faatere
+    depends_on:
+      - backend
+    networks:
+      - faatere-network
+
+# ========================================
+# Networks & Volumes
+# ========================================
+networks:
+  faatere-network:
+    driver: bridge
 
 volumes:
   postgres_data:

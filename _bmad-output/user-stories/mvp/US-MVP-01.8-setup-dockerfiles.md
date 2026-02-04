@@ -20,15 +20,17 @@
 
 ## Critères d'acceptance
 
-- [ ] Dockerfile backend avec multi-stage build (builder + production)
-- [ ] Dockerfile frontend pour développement
-- [ ] `.dockerignore` à la racine pour optimiser les builds
-- [ ] Support du hot-reload en mode développement
-- [ ] Build optimisé pour la production
+- [x] Dockerfile backend avec multi-stage build (builder + production)
+- [x] Dockerfile frontend pour développement
+- [x] `.dockerignore` à la racine pour optimiser les builds
+- [x] Support du hot-reload en mode développement
+- [x] Build optimisé pour la production
 
 ---
 
 ## Tâches techniques
+
+> **Note:** L'implémentation finale utilise des stages séparés (development, builder, production) pour une meilleure optimisation et flexibilité avec le paramètre `target` de docker-compose.
 
 ### `services/backend/Dockerfile`
 
@@ -39,75 +41,126 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Install yarn
-RUN apk add --no-cache yarn
+RUN apk add --no-cache python3 make g++
 
-# Copy shared directory
+COPY tsconfig.json ./tsconfig.json
 COPY shared/ ./shared/
-RUN if [ -f ./shared/package.json ]; then cd ./shared && yarn install && yarn build; fi
+RUN if [ -f ./shared/package.json ]; then cd ./shared && yarn install --frozen-lockfile && yarn build; fi
 
-# Install dependencies
-COPY services/backend/package.json ./
-COPY services/backend/yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY services/backend/package.json ./services/backend/
+COPY services/backend/yarn.lock* ./services/backend/
+RUN cd ./services/backend && yarn install --frozen-lockfile
 
-# Copy source code
-COPY services/backend/ .
-
-# Build
-RUN yarn build
+COPY services/backend/ ./services/backend/
+RUN cd ./services/backend && yarn build
 
 # ========================================
 # Production stage
 # ========================================
-FROM node:20-alpine
+FROM node:20-alpine AS production
 WORKDIR /app
 
-# Install dependencies for bcrypt
-RUN apk add --no-cache yarn python3 make g++
+RUN apk add --no-cache python3 make g++
 
-# Copy shared
+COPY tsconfig.json ./tsconfig.json
 COPY shared/ ./shared/
-RUN if [ -f ./shared/package.json ]; then cd ./shared && yarn install && yarn build; fi
+RUN if [ -f ./shared/package.json ]; then cd ./shared && yarn install --frozen-lockfile --production && yarn build; fi
 
-# Copy package files
 COPY services/backend/package.json ./
-COPY services/backend/yarn.lock ./
-RUN yarn install --frozen-lockfile
-
-# Rebuild bcrypt for target platform
+COPY services/backend/yarn.lock* ./
+RUN yarn install --frozen-lockfile --production
 RUN npm rebuild bcrypt --build-from-source
 
-# Copy built files
-COPY --from=builder /app/dist ./dist
-COPY services/backend/tsconfig*.json ./
-COPY services/backend/src ./src
+COPY --from=builder /app/services/backend/dist ./dist
 
 EXPOSE 3001
+CMD ["node", "dist/main"]
 
-# Dev or prod based on NODE_ENV
-CMD ["sh", "-c", "if [ \"$NODE_ENV\" = \"development\" ]; then yarn dev; else yarn migration:run && yarn start:prod; fi"]
+# ========================================
+# Development stage
+# ========================================
+FROM node:20-alpine AS development
+WORKDIR /app
+
+RUN apk add --no-cache python3 make g++
+
+COPY tsconfig.json ./tsconfig.json
+COPY shared/ ./shared/
+RUN if [ -f ./shared/package.json ]; then cd ./shared && yarn install --frozen-lockfile && yarn build; fi
+
+COPY services/backend/package.json ./
+COPY services/backend/yarn.lock* ./
+RUN yarn install --frozen-lockfile
+RUN npm rebuild bcrypt --build-from-source
+
+COPY services/backend/ .
+
+EXPOSE 3001
+CMD ["yarn", "dev"]
 ```
 
 ### `frontend/Dockerfile`
 
 ```dockerfile
-FROM node:20-alpine
+# ========================================
+# Development stage
+# ========================================
+FROM node:20-alpine AS development
 WORKDIR /app
 
-# Install yarn
-RUN apk add --no-cache yarn
-
-# Copy package files
-COPY frontend/package.json ./
+COPY package.json ./
 COPY yarn.lock ./
+COPY frontend/package.json ./frontend/
+COPY shared/package.json ./shared/
+
 RUN yarn install --frozen-lockfile
 
-# Copy source
-COPY frontend/ .
+COPY frontend/ ./frontend/
 
+WORKDIR /app/frontend
 EXPOSE 3000
 CMD ["yarn", "dev"]
+
+# ========================================
+# Build stage (for production)
+# ========================================
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+COPY package.json ./
+COPY yarn.lock ./
+COPY frontend/package.json ./frontend/
+COPY shared/package.json ./shared/
+
+RUN yarn install --frozen-lockfile
+
+COPY shared/ ./shared/
+COPY frontend/ ./frontend/
+
+WORKDIR /app/frontend
+RUN yarn build
+
+# ========================================
+# Production stage
+# ========================================
+FROM node:20-alpine AS production
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY package.json ./
+COPY yarn.lock ./
+COPY frontend/package.json ./frontend/
+COPY shared/package.json ./shared/
+
+RUN yarn install --frozen-lockfile --production
+
+COPY --from=builder /app/frontend/.next ./frontend/.next
+COPY --from=builder /app/frontend/public ./frontend/public
+
+WORKDIR /app/frontend
+EXPOSE 3000
+CMD ["yarn", "start"]
 ```
 
 ### `.dockerignore` racine

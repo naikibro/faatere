@@ -1,0 +1,48 @@
+# Node modules (reinstalled inside Docker)
+**/node_modules
+**/dist
+**/.next
+**/.expo
+
+# Logs
+**/*.log
+**/logs
+
+# OS
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Env files (passed via Docker secrets)
+**/.env
+**/.env.local
+**/.env.development
+**/.env.production
+
+# Cache/build
+**/coverage
+**/.cache
+**/build
+
+# IDE
+.vscode
+.idea
+
+# Tests (keep for development mounts)
+# **/__tests__
+# **/*.spec.ts
+# **/*.test.ts
+
+# BMAD
+**/_bmad*
+
+# Documentation
+**/README.md
+**/CHANGELOG.md
+**/docs

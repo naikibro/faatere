@@ -16,7 +16,14 @@
     "build": "yarn workspaces run build",
     "lint": "yarn workspaces run lint",
     "test": "yarn workspaces run test",
-    "compile": "yarn workspaces run compile"
+    "compile": "yarn workspaces run compile",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:build": "docker-compose build",
+    "docker:ps": "docker-compose ps",
+    "db:up": "docker-compose up -d postgres postgres-test minio adminer",
+    "db:down": "docker-compose down postgres postgres-test minio adminer"
   },
   "devDependencies": {
     "husky": "^9.1.7"

@@ -7,6 +7,7 @@
 | **Milestone** | MVP |
 | **Priorité** | P0 |
 | **PRD** | [prd-faatere-v1.md](../../prd-faatere-v1.md) |
+| **Status** | Done |
 
 ---
 
@@ -55,19 +56,19 @@ faatere/
 
 ## Critères d'acceptance
 
-- [ ] `package.json` racine avec configuration `workspaces`
-- [ ] Workspaces déclarés : `frontend`, `mobile`, `services/backend`, `shared`
-- [ ] Scripts racine pour orchestrer les commandes (dev, build, lint, test)
-- [ ] `yarn.lock` unique à la racine
-- [ ] `.gitignore` complet (node_modules, .env, build outputs, etc.)
-- [ ] `packageManager` défini : `yarn@1.22.22`
-- [ ] Husky configuré pour pre-commit hooks
+- [x] `package.json` racine avec configuration `workspaces`
+- [x] Workspaces déclarés : `frontend`, `mobile`, `services/backend`, `shared`
+- [x] Scripts racine pour orchestrer les commandes (dev, build, lint, test)
+- [x] `yarn.lock` unique à la racine
+- [x] `.gitignore` complet (node_modules, .env, build outputs, etc.)
+- [x] `packageManager` défini : `yarn@1.22.22`
+- [x] Husky configuré pour pre-commit hooks
 
 ---
 
 ## Tâches techniques
 
-- [ ] Créer `package.json` racine avec :
+- [x] Créer `package.json` racine avec :
   ```json
   {
     "name": "faatere",
@@ -94,9 +95,9 @@ faatere/
     "packageManager": "yarn@1.22.22"
   }
   ```
-- [ ] Créer la structure de dossiers vides
-- [ ] Configurer `.gitignore` complet
-- [ ] Exécuter `yarn install` pour valider la configuration
+- [x] Créer la structure de dossiers vides
+- [x] Configurer `.gitignore` complet
+- [x] Exécuter `yarn install` pour valider la configuration
 
 ---
 
@@ -115,3 +116,29 @@ faatere/
 ## Notes
 
 Cette US établit les fondations du projet. Toutes les autres US MVP dépendent de cette configuration initiale.
+
+---
+
+## Dev Agent Record
+
+### Implementation Date
+2026-02-03
+
+### Commit
+`c485a63` - feat(monorepo): setup Yarn Workspaces and shared types
+
+### File List
+- `package.json` - Root monorepo config with workspaces
+- `yarn.lock` - Generated lockfile
+- `tsconfig.json` - Base TypeScript config
+- `.gitignore` - Enhanced with build outputs, IDE files, coverage
+- `.env.example` - Environment variables template
+- `.husky/pre-commit` - Pre-commit hook running `yarn compile`
+- `frontend/package.json` - Frontend workspace placeholder
+- `mobile/package.json` - Mobile workspace placeholder
+- `services/backend/package.json` - Backend workspace placeholder
+
+### Notes
+- Added `license: "UNLICENSED"` to root package.json (private project)
+- Pre-commit hook runs TypeScript compilation across all workspaces
+- Placeholder workspaces have stub scripts for dev/build/lint/test/compile

@@ -1,0 +1,5 @@
+export enum UserRole {
+  BOARD = 'BOARD',
+  TOMITE_PRESIDENT = 'TOMITE_PRESIDENT',
+  SECRETARY = 'SECRETARY',
+}

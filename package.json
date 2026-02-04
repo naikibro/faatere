@@ -1,0 +1,25 @@
+{
+  "name": "faatere",
+  "private": true,
+  "license": "UNLICENSED",
+  "workspaces": [
+    "frontend",
+    "mobile",
+    "services/backend",
+    "shared"
+  ],
+  "scripts": {
+    "postinstall": "husky",
+    "dev": "yarn workspace backend dev",
+    "dev:frontend": "yarn workspace frontend dev",
+    "dev:backend": "yarn workspace backend dev",
+    "build": "yarn workspaces run build",
+    "lint": "yarn workspaces run lint",
+    "test": "yarn workspaces run test",
+    "compile": "yarn workspaces run compile"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  },
+  "packageManager": "yarn@1.22.22"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "mobile",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Mobile not yet configured'",
+    "build": "echo 'Mobile not yet configured'",
+    "lint": "echo 'Mobile not yet configured'",
+    "test": "echo 'Mobile not yet configured'",
+    "compile": "echo 'Mobile not yet configured'"
+  }
+}

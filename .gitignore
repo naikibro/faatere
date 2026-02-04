@@ -1,22 +1,53 @@
+# Environment
 .env*
 !.env.example
 !.env.template
 
-TODO.md
-
+# Dependencies
 node_modules/
 
+# Build outputs
+dist/
+build/
+.next/
+.expo/
+*.tsbuildinfo
+
+# IDE & OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary
+tmp/
+temp/
+TODO.md
+
+# Mobile
 android/
 ios/
 
-.DS_Store
+# Legacy & Old
 old-repositories/
 legacy/
 
+# Documentation
 quality-standards/
-
 .docusaurus/
 
+# Audio
 .claude/audio
 
 # MCP configs (contain PAT)

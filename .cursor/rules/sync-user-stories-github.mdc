@@ -1,0 +1,172 @@
+---
+description: Synchronise les User Stories du PRD avec les Issues GitHub
+globs:
+  - "_bmad-output/prd-*.md"
+alwaysApply: false
+---
+
+# Synchronisation User Stories ↔ GitHub Issues
+
+## Objectif
+
+Maintenir une cohérence parfaite entre les User Stories définies dans les fichiers PRD (`_bmad-output/prd-*.md`) et les Issues du projet GitHub. Chaque US doit avoir une Issue correspondante.
+
+## Règles de synchronisation
+
+### Création d'une User Story
+
+Quand une nouvelle US est ajoutée au PRD :
+
+1. **Créer une Issue GitHub** avec le MCP GitHub :
+   ```
+   Utiliser: mcp__github__issue_write avec method: "create"
+   ```
+
+2. **Format du titre** : `[{US_ID}] {Titre de l'US}`
+   - Exemple : `[US-MVP-01.1] Setup Monorepo avec Yarn Workspaces`
+
+3. **Corps de l'Issue** :
+   - Description de l'US
+   - Critères d'acceptation (liste à cocher)
+   - Référence au fichier PRD
+
+4. **Labels à appliquer** :
+   - `user-story`
+   - Label du milestone : `mvp`, `v1.0`, ou `v1.1`
+   - Labels techniques si applicable : `backend`, `frontend`, `mobile`, `infra`
+
+5. **Milestone** : Assigner au milestone correspondant (MVP, V1.0, V1.1)
+
+### Modification d'une User Story
+
+Quand une US existante est modifiée :
+
+1. **Rechercher l'Issue** correspondante :
+   ```
+   Utiliser: mcp__github__search_issues avec query: "[US-XXX-XX.X]"
+   ```
+
+2. **Mettre à jour l'Issue** :
+   ```
+   Utiliser: mcp__github__issue_write avec method: "update"
+   ```
+
+3. **Ajouter un commentaire** expliquant les changements :
+   ```
+   Utiliser: mcp__github__add_issue_comment
+   ```
+
+### Suppression d'une User Story
+
+Quand une US est supprimée du PRD :
+
+1. **Rechercher l'Issue** correspondante
+2. **Fermer l'Issue** avec state: "closed" et state_reason: "not_planned"
+3. **Ajouter un commentaire** : "US supprimée du PRD - voir commit {SHA}"
+
+## Structure des Issues
+
+### Template de corps d'Issue
+
+```markdown
+## Description
+
+{Description de l'US depuis le PRD}
+
+## Critères d'acceptation
+
+- [ ] {Critère 1}
+- [ ] {Critère 2}
+- [ ] {Critère 3}
+
+## Informations
+
+- **PRD** : `_bmad-output/prd-faatere-v1.md`
+- **Milestone** : {MVP|V1.0|V1.1}
+- **Priorité** : {P0|P1|P2}
+
+## Dépendances
+
+{Liste des US dépendantes si applicable}
+```
+
+## Outils MCP GitHub à utiliser
+
+### Création d'Issue
+```
+mcp__github__issue_write
+  method: "create"
+  owner: "{owner}"
+  repo: "{repo}"
+  title: "[US-XXX-XX.X] Titre"
+  body: "{contenu markdown}"
+  labels: ["user-story", "mvp"]
+  milestone: {numero_milestone}
+```
+
+### Mise à jour d'Issue
+```
+mcp__github__issue_write
+  method: "update"
+  owner: "{owner}"
+  repo: "{repo}"
+  issue_number: {numero}
+  title: "{nouveau titre si changé}"
+  body: "{nouveau contenu si changé}"
+```
+
+### Recherche d'Issue
+```
+mcp__github__search_issues
+  query: "[US-MVP-01.1] repo:{owner}/{repo}"
+  owner: "{owner}"
+  repo: "{repo}"
+```
+
+### Ajout de commentaire
+```
+mcp__github__add_issue_comment
+  owner: "{owner}"
+  repo: "{repo}"
+  issue_number: {numero}
+  body: "Mise à jour depuis le PRD : {description des changements}"
+```
+
+### Fermeture d'Issue
+```
+mcp__github__issue_write
+  method: "update"
+  owner: "{owner}"
+  repo: "{repo}"
+  issue_number: {numero}
+  state: "closed"
+  state_reason: "not_planned"
+```
+
+## Workflow recommandé
+
+1. **Avant modification du PRD** : Lire le fichier PRD actuel
+2. **Identifier les changements** : Nouvelles US, US modifiées, US supprimées
+3. **Synchroniser avec GitHub** : Appliquer les changements correspondants
+4. **Documenter** : Ajouter des commentaires sur les Issues modifiées
+
+## Labels standards
+
+| Label | Description |
+|-------|-------------|
+| `user-story` | Identifie une Issue comme US |
+| `mvp` | Milestone MVP |
+| `v1.0` | Milestone V1.0 |
+| `v1.1` | Milestone V1.1 |
+| `backend` | Concerne le backend NestJS |
+| `frontend` | Concerne le frontend Next.js |
+| `mobile` | Concerne l'app mobile React Native |
+| `infra` | Infrastructure, DevOps, Docker |
+| `blocked` | US bloquée par une dépendance |
+
+## Notes importantes
+
+- Toujours vérifier que le repository GitHub existe avant de créer des Issues
+- Les numéros de milestone doivent être récupérés via l'API GitHub
+- En cas de doute sur le mapping US → Issue, demander confirmation à l'utilisateur
+- Ne jamais supprimer définitivement une Issue, toujours la fermer avec un commentaire explicatif

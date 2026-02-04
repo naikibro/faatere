@@ -18,3 +18,7 @@ quality-standards/
 .docusaurus/
 
 .claude/audio
+
+# MCP configs (contain PAT)
+.cursor/mcp.json
+.claude/settings.json

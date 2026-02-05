@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import configuration from './config/configuration';
 import { validationSchema } from './config/validation.schema';
 import { User, Tomite, Member, Invitation } from './entities';
+import { DbManagementModule } from './modules/db-management';
+import { InitialSchema1770191785802 } from './migrations/1770191785802-InitialSchema';
 
 @Module({
   imports: [
@@ -25,13 +27,14 @@ import { User, Tomite, Member, Invitation } from './entities';
         type: 'postgres',
         url: configService.get<string>('database.url'),
         entities: [User, Tomite, Member, Invitation],
+        migrations: [InitialSchema1770191785802],
         autoLoadEntities: true,
-        // Always use migrations - synchronize:true can cause data loss and schema drift
-        // Run: yarn migration:run to apply migrations
+        migrationsRun: false,
         synchronize: false,
         logging: configService.get<string>('nodeEnv') === 'development',
       }),
     }),
+    DbManagementModule,
   ],
   controllers: [AppController],
   providers: [AppService],

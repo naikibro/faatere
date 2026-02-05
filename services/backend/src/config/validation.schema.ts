@@ -73,4 +73,9 @@ export const validationSchema = Joi.object({
   // CORS
   // ========================================
   CORS_ORIGIN: Joi.string().default('http://localhost:3000'),
+
+  // ========================================
+  // DB Management API
+  // ========================================
+  DB_MANAGEMENT_ENABLED: Joi.boolean().default(true),
 });

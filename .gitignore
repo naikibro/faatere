@@ -53,3 +53,21 @@ quality-standards/
 # MCP configs (contain PAT)
 .cursor/mcp.json
 .claude/settings.json
+
+shared/node_modules/
+shared/dist/
+shared/build/
+
+# Compiled files in shared/src (should go to dist/)
+shared/src/**/*.js
+shared/src/**/*.js.map
+shared/src/**/*.d.ts
+shared/coverage/
+shared/logs/
+shared/tmp/
+shared/temp/
+shared/TODO.md
+shared/android/
+shared/ios/
+shared/old-repositories/
+shared/legacy/

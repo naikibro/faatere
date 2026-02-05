@@ -1,0 +1,4 @@
+export enum InvitationRole {
+  TOMITE_PRESIDENT = 'TOMITE_PRESIDENT',
+  SECRETARY = 'SECRETARY',
+}

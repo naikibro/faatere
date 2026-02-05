@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configuration from './config/configuration';
 import { validationSchema } from './config/validation.schema';
+import { User, Tomite, Member, Invitation } from './entities';
 
 @Module({
   imports: [
@@ -23,10 +24,11 @@ import { validationSchema } from './config/validation.schema';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('database.url'),
+        entities: [User, Tomite, Member, Invitation],
         autoLoadEntities: true,
-        // WARNING: synchronize:true auto-migrates schema - NEVER use in production!
-        // Use TypeORM migrations instead: https://typeorm.io/migrations
-        synchronize: configService.get<string>('nodeEnv') === 'development',
+        // Always use migrations - synchronize:true can cause data loss and schema drift
+        // Run: yarn migration:run to apply migrations
+        synchronize: false,
         logging: configService.get<string>('nodeEnv') === 'development',
       }),
     }),

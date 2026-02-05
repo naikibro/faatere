@@ -51,4 +51,8 @@ export default () => ({
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   },
+
+  dbManagement: {
+    enabled: process.env.DB_MANAGEMENT_ENABLED !== 'false',
+  },
 });

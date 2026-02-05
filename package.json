@@ -6,7 +6,8 @@
     "frontend",
     "mobile",
     "services/backend",
-    "shared"
+    "shared",
+    "documentation"
   ],
   "scripts": {
     "postinstall": "husky",
@@ -23,7 +24,9 @@
     "docker:build": "docker-compose build",
     "docker:ps": "docker-compose ps",
     "db:up": "docker-compose up -d postgres postgres-test minio adminer",
-    "db:down": "docker-compose down postgres postgres-test minio adminer"
+    "db:down": "docker-compose down postgres postgres-test minio adminer",
+    "docs": "yarn workspace documentation start",
+    "docs:build": "yarn workspace documentation build"
   },
   "devDependencies": {
     "husky": "^9.1.7"

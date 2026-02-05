@@ -145,6 +145,30 @@ services:
     networks:
       - faatere-network
 
+  # ========================================
+  # Documentation
+  # ========================================
+  documentation:
+    build:
+      context: ./documentation
+      dockerfile: Dockerfile
+      target: development
+    container_name: faatere-documentation
+    restart: unless-stopped
+    ports:
+      - '${DOCS_PORT:-3002}:3000'
+    volumes:
+      - ./documentation/docs:/app/docs
+      - ./documentation/src:/app/src
+      - ./documentation/static:/app/static
+      - ./documentation/docusaurus.config.ts:/app/docusaurus.config.ts
+      - ./documentation/sidebars.ts:/app/sidebars.ts
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - faatere-network
+
 # ========================================
 # Networks & Volumes
 # ========================================

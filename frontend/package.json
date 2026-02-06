@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "compile": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "echo 'No tests configured for frontend'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

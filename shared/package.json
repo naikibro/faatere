@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "compile": "tsc --noEmit"
+    "compile": "tsc --noEmit",
+    "lint": "echo 'No linting configured for shared'"
   },
   "devDependencies": {
     "typescript": "^5.7.3"

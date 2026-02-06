@@ -15,20 +15,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
       - name: Install dependencies
-        run: |
-          cd frontend && yarn install && cd ..
-          cd services/backend && yarn install && cd ../..
-          cd mobile && yarn install && cd ..
+        run: yarn install --frozen-lockfile
 
       - name: Lint and format check
-        run: |
-          cd frontend && yarn lint && cd ..
-          cd services/backend && yarn lint && cd ../..
-          cd mobile && yarn lint && cd ..
+        run: yarn lint
 
       - name: Type check and compile
-        run: |
-          cd frontend && yarn compile && cd ..
-          cd services/backend && yarn compile && cd ../..
-          cd mobile && yarn compile && cd ..
+        run: yarn compile

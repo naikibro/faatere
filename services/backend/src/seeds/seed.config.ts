@@ -16,14 +16,6 @@ const seedEnvSchema = z.object({
     .min(1, 'BOARD_USERS cannot be empty'),
 });
 
-const parsed = seedEnvSchema.safeParse(process.env);
-
-if (!parsed.success) {
-  console.error('❌ Invalid seed environment configuration:');
-  console.error(parsed.error.format());
-  process.exit(1);
-}
-
 const emailSchema = z.string().email();
 
 export function parseBoardUsers(boardUsersEnv: string): BoardUser[] {
@@ -71,4 +63,14 @@ export function parseBoardUsers(boardUsersEnv: string): BoardUser[] {
   return users;
 }
 
-export const seedConfig = parsed.data;
+export function getSeedConfig() {
+  const parsed = seedEnvSchema.safeParse(process.env);
+
+  if (!parsed.success) {
+    console.error('❌ Invalid seed environment configuration:');
+    console.error(parsed.error.format());
+    process.exit(1);
+  }
+
+  return parsed.data;
+}

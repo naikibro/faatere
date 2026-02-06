@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { UserRole } from '@shared/src/enums';
 import { User, Tomite } from '../entities';
 import { BUREAU_TOMITE_CODE } from './tomites.seed';
-import { seedConfig, parseBoardUsers } from './seed.config';
+import { getSeedConfig, parseBoardUsers } from './seed.config';
 
 const SALT_ROUNDS = 12;
 
@@ -23,6 +23,7 @@ export async function seedBoardUsers(dataSource: DataSource): Promise<void> {
   }
 
   // Parse board users from environment variable
+  const seedConfig = getSeedConfig();
   const boardUsers = parseBoardUsers(seedConfig.BOARD_USERS);
   console.log(`  📋 Found ${boardUsers.length} board user(s) to process`);
 

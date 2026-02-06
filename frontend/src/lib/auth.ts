@@ -2,6 +2,11 @@ const TOKEN_KEY = 'faatere_access_token';
 const REFRESH_KEY = 'faatere_refresh_token';
 
 /**
+ * Cookie name used by middleware for server-side auth check
+ */
+export const AUTH_COOKIE_NAME = 'faatere_auth';
+
+/**
  * Get the stored access token
  */
 export const getToken = (): string | null => {
@@ -10,10 +15,11 @@ export const getToken = (): string | null => {
 };
 
 /**
- * Store the access token
+ * Store the access token (localStorage + cookie for middleware)
  */
 export const setToken = (token: string): void => {
   localStorage.setItem(TOKEN_KEY, token);
+  document.cookie = `${AUTH_COOKIE_NAME}=true; path=/; max-age=${60 * 60 * 24}; SameSite=Lax`;
 };
 
 /**
@@ -32,11 +38,14 @@ export const setRefreshToken = (token: string): void => {
 };
 
 /**
- * Clear all stored tokens
+ * Clear all stored tokens (localStorage + cookie)
  */
 export const clearTokens = (): void => {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(REFRESH_KEY);
+  if (typeof document !== 'undefined') {
+    document.cookie = `${AUTH_COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax`;
+  }
 };
 
 /**

@@ -5,7 +5,109 @@ title: Authentication
 
 # Authentication
 
-This document describes the authentication system and its user stories.
+The Faatere authentication system provides secure access to the application using **JWT-based authentication** with **automatic token refresh**. It covers both the NestJS backend API and the Next.js frontend.
+
+---
+
+## Overview
+
+The authentication flow is built on industry-standard patterns:
+
+- **Backend**: NestJS with Passport.js, JWT strategy, and global route protection
+- **Frontend**: Next.js middleware for server-side route protection, Axios interceptors for client-side token management
+- **Token strategy**: Short-lived access tokens (24h) paired with longer-lived refresh tokens (7d)
+
+```mermaid
+flowchart LR
+    A[User] -->|email + password| B[POST /auth/login]
+    B -->|LocalStrategy| C[Validate credentials]
+    C -->|bcrypt compare| D{Valid?}
+    D -->|Yes| E[Generate JWT pair]
+    D -->|No| F[401 Unauthorized]
+    E --> G[Access Token 24h]
+    E --> H[Refresh Token 7d]
+    G --> I[Client stores tokens]
+    H --> I
+```
+
+---
+
+## Sub-documentation
+
+| Topic | Description |
+|-------|-------------|
+| [JWT Authentication](auth/jwt) | JWT token structure, validation strategy, global route protection, and the `@Public()` decorator |
+| [Refresh Token](auth/refresh-token) | Token refresh mechanism, automatic client-side refresh with request queuing, and session management |
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `POST` | `/auth/login` | Public | Login with email and password |
+| `POST` | `/auth/refresh` | Public | Refresh token pair |
+| `GET` | `/auth/me` | Protected | Get current user profile |
+
+### Login
+
+```
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Response (200):**
+```json
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiIs...",
+  "refreshToken": "eyJhbGciOiJIUzI1NiIs...",
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "role": "admin",
+    "tomiteId": "uuid",
+    "isActive": true
+  }
+}
+```
+
+**Rate limiting:** 5 attempts per minute per IP.
+
+### Refresh
+
+```
+POST /auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIs..."
+}
+```
+
+**Response (200):** Same structure as login response with new token pair.
+
+### Get Profile
+
+```
+GET /auth/me
+Authorization: Bearer <access_token>
+```
+
+**Response (200):**
+```json
+{
+  "id": "uuid",
+  "email": "user@example.com",
+  "role": "admin",
+  "tomiteId": "uuid",
+  "isActive": true
+}
+```
 
 ---
 
@@ -81,18 +183,7 @@ sequenceDiagram
 
 > As a **user**, I want my session to stay active while I'm using the app so that I don't have to log in repeatedly.
 
-```mermaid
-sequenceDiagram
-    participant Frontend
-    participant API
-
-    Frontend->>API: GET /api/members (expired token)
-    API-->>Frontend: 401 Token expired
-    Frontend->>API: POST /auth/refresh (refresh token)
-    API-->>Frontend: New access token
-    Frontend->>API: GET /api/members (new token)
-    API-->>Frontend: Members data
-```
+See [Refresh Token documentation](auth/refresh-token) for detailed implementation.
 
 **Acceptance criteria:**
 - Access tokens expire after 24 hours
@@ -124,4 +215,3 @@ sequenceDiagram
 | Tomites | CRUD | Read own | Read own |
 | Users | CRUD | - | - |
 | Settings | CRUD | - | - |
-

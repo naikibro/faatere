@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 export class DbManagementEnabledGuard implements CanActivate {
   constructor(private readonly configService: ConfigService) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  canActivate(_context: ExecutionContext): boolean {
     const isEnabled = this.configService.get<boolean>('dbManagement.enabled');
 
     if (!isEnabled) {

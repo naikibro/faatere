@@ -1,0 +1,88 @@
+name: Automated Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+          cache-dependency-path: services/backend/yarn.lock
+
+      - name: Install dependencies
+        working-directory: services/backend
+        run: yarn install
+
+      - name: Run tests
+        working-directory: services/backend
+        env:
+          NODE_ENV: test
+          POSTGRES_TEST_URI: postgresql://postgres:postgres@localhost:5433/backend
+          JWT_SECRET: test-secret
+        run: yarn test
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report-backend
+          path: services/backend/junit.xml
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: yarn install
+
+      - name: Run tests
+        working-directory: frontend
+        run: yarn test
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report-frontend
+          path: frontend/junit.xml
+
+  mobile-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+          cache-dependency-path: mobile/yarn.lock
+
+      - name: Install dependencies
+        working-directory: mobile
+        run: yarn install
+
+      - name: Run tests
+        working-directory: mobile
+        run: yarn test

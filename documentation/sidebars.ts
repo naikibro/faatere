@@ -21,7 +21,12 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Features',
       items: [
-        'feature-authentication',
+        {
+          type: 'category',
+          label: 'Authentication',
+          link: { type: 'doc', id: 'feature-authentication' },
+          items: ['auth/auth-jwt', 'auth/auth-refresh-token'],
+        },
         'feature-members',
         'feature-tomites',
       ],

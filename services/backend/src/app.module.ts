@@ -9,7 +9,7 @@ import configuration from './config/configuration';
 import { validationSchema } from './config/validation.schema';
 import { User, Tomite, Member, Invitation } from './entities';
 import { DbManagementModule } from './modules/db-management';
-import { AuthModule } from './modules/auth';
+import { AuthModule, JwtAuthGuard } from './modules/auth';
 import { InitialSchema1770191785802 } from './migrations/1770191785802-InitialSchema';
 
 @Module({
@@ -52,6 +52,10 @@ import { InitialSchema1770191785802 } from './migrations/1770191785802-InitialSc
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
     },
   ],
 })

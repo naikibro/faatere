@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+const AUTH_COOKIE_NAME = 'faatere_auth';
+
 /**
  * Public paths that don't require authentication
  */
 const publicPaths = ['/login', '/setup-password'];
 
 /**
- * Middleware to protect routes and handle authentication redirects
+ * Middleware to protect routes and redirect unauthenticated users to /login
  */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -17,18 +19,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Allow static files and API routes
-  if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.includes('.')
-  ) {
-    return NextResponse.next();
+  // Check for auth cookie (set client-side when user logs in)
+  const authCookie = request.cookies.get(AUTH_COOKIE_NAME);
+
+  if (!authCookie) {
+    // Redirect to login with return URL
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('returnTo', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
-  // For protected routes, we rely on client-side auth check
-  // since localStorage is not accessible in middleware
-  // The dashboard layout handles the redirect if not authenticated
   return NextResponse.next();
 }
 

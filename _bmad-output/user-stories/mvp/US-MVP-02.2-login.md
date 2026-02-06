@@ -22,22 +22,23 @@
 
 ### Backend
 
-- [ ] Endpoint POST /auth/login
-- [ ] Validation email format + password requis
-- [ ] Vérification compte actif (isActive === true)
-- [ ] Retourne JWT access token (expiration 24h)
-- [ ] Retourne refresh token (expiration 7 jours)
-- [ ] Erreur 401 si credentials invalides
-- [ ] Erreur 403 si compte désactivé
-- [ ] Rate limiting : 5 tentatives / minute
+- [x] Endpoint POST /auth/login
+- [x] Validation email format + password requis
+- [x] Vérification compte actif (isActive === true)
+- [x] Retourne JWT access token (expiration 24h)
+- [x] Retourne refresh token (expiration 7 jours)
+- [x] Erreur 401 si credentials invalides
+- [x] Erreur 403 si compte désactivé
+- [x] Rate limiting : 5 tentatives / minute
 
 ### Frontend
 
-- [ ] Page /login avec formulaire
-- [ ] Validation côté client
-- [ ] Affichage erreurs
-- [ ] Redirection vers dashboard après login
-- [ ] Stockage token sécurisé (httpOnly cookie ou localStorage)
+- [x] Page /login avec formulaire
+- [x] Validation côté client
+- [x] Affichage erreurs
+- [x] Redirection vers dashboard après login
+- [x] Stockage token sécurisé (httpOnly cookie ou localStorage)
+- [x] Toggle visibilité mot de passe
 
 ---
 
@@ -45,19 +46,19 @@
 
 ### Backend
 
-- [ ] Créer AuthModule avec AuthService et AuthController
-- [ ] Implémenter stratégie Passport Local
-- [ ] Implémenter stratégie Passport JWT
-- [ ] Configurer @nestjs/jwt avec secret et expiration
-- [ ] Créer DTO LoginDto avec validations
-- [ ] Implémenter rate limiting avec @nestjs/throttler
+- [x] Créer AuthModule avec AuthService et AuthController
+- [x] Implémenter stratégie Passport Local
+- [x] Implémenter stratégie Passport JWT
+- [x] Configurer @nestjs/jwt avec secret et expiration
+- [x] Créer DTO LoginDto avec validations
+- [x] Implémenter rate limiting avec @nestjs/throttler
 
 ### Frontend
 
-- [ ] Créer page /login avec formulaire react-hook-form
-- [ ] Configurer zod schema pour validation
-- [ ] Implémenter hook useAuth pour gestion état authentification
-- [ ] Configurer axios interceptors pour token
+- [x] Créer page /login avec formulaire react-hook-form
+- [x] Configurer zod schema pour validation
+- [x] Implémenter hook useAuth pour gestion état authentification
+- [x] Configurer axios interceptors pour token
 
 ---
 

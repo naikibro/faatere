@@ -1,0 +1,34 @@
+name: Code Quality
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          cd frontend && yarn install && cd ..
+          cd services/backend && yarn install && cd ../..
+          cd mobile && yarn install && cd ..
+
+      - name: Lint and format check
+        run: |
+          cd frontend && yarn lint && cd ..
+          cd services/backend && yarn lint && cd ../..
+          cd mobile && yarn lint && cd ..
+
+      - name: Type check and compile
+        run: |
+          cd frontend && yarn compile && cd ..
+          cd services/backend && yarn compile && cd ../..
+          cd mobile && yarn compile && cd ..
